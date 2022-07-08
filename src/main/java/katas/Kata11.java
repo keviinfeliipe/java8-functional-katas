@@ -1,11 +1,14 @@
 package katas;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import model.BoxArt;
 import util.DataUtil;
-
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -63,8 +66,32 @@ public class Kata11 {
         List<Map> boxArts = DataUtil.getBoxArts();
         List<Map> bookmarkList = DataUtil.getBookmarkList();
 
-        return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
-                ImmutableMap.of("id", 5, "title", "The Chamber", "time", 123, "boxart", "someUrl")
-        )));
+        return lists.stream().map(listMap ->
+                ImmutableMap.of(
+                        "name", listMap.get("name"),
+                        "videos", videos.stream()
+                                .filter(videosMap -> listMap.get("id").equals(videosMap.get("listId")))
+                                .map(videosMap->
+                                        ImmutableMap.of(
+                                                "id", videosMap.get("id"),
+                                                "title", videosMap.get("title"),
+                                                "time", bookmarkList.stream()
+                                                        .filter(bookMap -> videosMap.get("id").equals(bookMap.get("videoId")))
+                                                        .map(bookMap -> bookMap.get("time"))
+                                                        .findFirst()
+                                                        .orElseThrow(),
+                                                "boxart", boxArts.stream()
+                                                        .filter(boxMap -> videosMap.get("id").equals(boxMap.get("videoId")))
+                                                        .map(boxMap -> boxMap.get("url"))
+                                                        .sorted()
+                                                        .findFirst()
+                                                        .orElseThrow()
+
+                                        )
+                                ).collect(Collectors.toList())
+                )
+        ).collect(Collectors.toList());
+
     }
+
 }
