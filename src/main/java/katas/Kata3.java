@@ -1,6 +1,5 @@
 package katas;
 
-import com.google.common.collect.ImmutableList;
 import model.Movie;
 import model.MovieList;
 import util.DataUtil;

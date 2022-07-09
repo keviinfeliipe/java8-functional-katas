@@ -2,9 +2,11 @@ package katas;
 
 import com.google.common.collect.ImmutableMap;
 import model.BoxArt;
+import model.Movie;
 import model.MovieList;
 import util.DataUtil;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +23,21 @@ public class Kata7 {
 
         return movieLists.stream()
                 .flatMap(movieList -> movieList.getVideos().stream())
-                .map(movie -> ImmutableMap.of(
-                        "id", movie.getId(),
-                        "title", movie.getTitle(),
-                        "boxart", movie.getBoxarts().stream()
-                                .min(Comparator.comparing(BoxArt::getWidth))
-                                .orElseThrow()
-                                .getUrl())
-                ).collect(Collectors.toList());
+                .map(Kata7::getMovie)
+                .collect(Collectors.toList());
+    }
+
+    private static Map<String, ? extends Serializable> getMovie(Movie movie) {
+        return Map.of(
+                "id", movie.getId(),
+                "title", movie.getTitle(),
+                "boxart", getUrl(movie));
+    }
+
+    private static String getUrl(Movie movie) {
+        return movie.getBoxarts().stream()
+                .min(Comparator.comparing(BoxArt::getWidth))
+                .orElseThrow()
+                .getUrl();
     }
 }

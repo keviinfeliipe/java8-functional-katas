@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import model.*;
 import util.DataUtil;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -18,28 +19,41 @@ import java.util.stream.Collectors;
 */
 public class Kata9 {
     public static List<Map> execute() {
+
         List<MovieList> movieLists = DataUtil.getMovieLists();
+
         return movieLists.stream()
                 .flatMap(movieList -> movieList.getVideos().stream())
-                .map(movie ->
-                        ImmutableMap.of(
-                                "id", movie.getId(),
-                                "title", movie.getTitle(),
-                                "time", movie.getInterestingMoments()
-                                        .stream()
-                                        .map(InterestingMoment::getTime)
-                                        .mapToDouble(Date::getTime)
-                                        .average()
-                                        .stream()
-                                        .mapToObj(operand -> new Date((long) operand))
-                                        .findFirst()
-                                        .orElseThrow(),
-                                "url", movie.getBoxarts().stream()
-                                        .min(Comparator.comparing(BoxArt::getWidth))
-                                        .orElseThrow()
-                                        .getUrl()
-                        )
-                ).collect(Collectors.toList());
+                .map(Kata9::getVideo)
+                .collect(Collectors.toList());
 
+    }
+
+    private static Map<String, ? extends Serializable> getVideo(Movie movie) {
+        return Map.of(
+                "id", movie.getId(),
+                "title", movie.getTitle(),
+                "time", getTime(movie),
+                "url", getUrl(movie)
+        );
+    }
+
+    private static String getUrl(Movie movie) {
+        return movie.getBoxarts().stream()
+                .min(Comparator.comparing(BoxArt::getWidth))
+                .orElseThrow()
+                .getUrl();
+    }
+
+    private static Date getTime(Movie movie) {
+        return movie.getInterestingMoments()
+                .stream()
+                .map(InterestingMoment::getTime)
+                .mapToDouble(Date::getTime)
+                .average()
+                .stream()
+                .mapToObj(operand -> new Date((long) operand))
+                .findFirst()
+                .orElseThrow();
     }
 }

@@ -1,14 +1,10 @@
 package katas;
 
-import com.google.common.collect.ImmutableMap;
-import model.BoxArt;
 import util.DataUtil;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -67,31 +63,43 @@ public class Kata11 {
         List<Map> bookmarkList = DataUtil.getBookmarkList();
 
         return lists.stream().map(listMap ->
-                ImmutableMap.of(
+                Map.of(
                         "name", listMap.get("name"),
-                        "videos", videos.stream()
-                                .filter(videosMap -> listMap.get("id").equals(videosMap.get("listId")))
-                                .map(videosMap->
-                                        ImmutableMap.of(
-                                                "id", videosMap.get("id"),
-                                                "title", videosMap.get("title"),
-                                                "time", bookmarkList.stream()
-                                                        .filter(bookMap -> videosMap.get("id").equals(bookMap.get("videoId")))
-                                                        .map(bookMap -> bookMap.get("time"))
-                                                        .findFirst()
-                                                        .orElseThrow(),
-                                                "boxart", boxArts.stream()
-                                                        .filter(boxMap -> videosMap.get("id").equals(boxMap.get("videoId")))
-                                                        .map(boxMap -> boxMap.get("url"))
-                                                        .sorted()
-                                                        .findFirst()
-                                                        .orElseThrow()
-
-                                        )
-                                ).collect(Collectors.toList())
+                        "videos", getListVideoById(listMap.get("id"),videos, boxArts, bookmarkList)
+                                .collect(Collectors.toList())
                 )
         ).collect(Collectors.toList());
 
+    }
+
+    private static Stream<Map<String, Object>> getListVideoById(Object listId, List<Map> videos, List<Map> boxArts, List<Map> bookmarkList) {
+        return videos.stream()
+                .filter(videosMap -> listId.equals(videosMap.get("listId")))
+                .map(videosMap ->
+                        Map.of(
+                                "id", videosMap.get("id"),
+                                "title", videosMap.get("title"),
+                                "time", getTimeById(bookmarkList, videosMap.get("id")),
+                                "boxart", getBoxartById(boxArts, videosMap.get("id"))
+                        )
+                );
+    }
+
+    private static Object getBoxartById(List<Map> boxArts, Object videoId) {
+        return boxArts.stream()
+                .filter(boxMap -> videoId.equals(boxMap.get("videoId")))
+                .map(boxMap -> boxMap.get("url"))
+                .sorted()
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private static Object getTimeById(List<Map> bookmarkList, Object videoId) {
+        return bookmarkList.stream()
+                .filter(bookMap -> videoId.equals(bookMap.get("videoId")))
+                .map(bookMap -> bookMap.get("time"))
+                .findFirst()
+                .orElseThrow();
     }
 
 }
