@@ -1,5 +1,6 @@
 package katas;
 
+import com.google.common.collect.ImmutableMap;
 import util.DataUtil;
 
 import java.util.*;
@@ -52,7 +53,7 @@ public class Kata10 {
         List<Map> videos = DataUtil.getVideos();
 
         return lists.stream()
-                .map(map -> Map.of(
+                .map(map -> ImmutableMap.of(
                         "name", map.get("name"),
                         "videos", getVideo(videos, map.get("id"))
                 )).collect(Collectors.toList());
@@ -61,7 +62,7 @@ public class Kata10 {
     private static List<Map<String, Object>> getVideo(List<Map> videos, Object map) {
         return videos.stream()
                 .filter(map1 -> map.equals(map1.get("listId")))
-                .map(map1 -> Map.of(
+                .map(map1 -> ImmutableMap.of(
                         "id", map1.get("id"),
                         "title", map1.get("title")
                 )).collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package katas;
 
+import com.google.common.collect.ImmutableMap;
 import model.BoxArt;
 import model.Movie;
 import model.MovieList;
@@ -25,7 +26,7 @@ public class Kata4 {
     }
 
     private static Map<String, Object> getMovie(Movie movie) {
-        return Map.of(
+        return ImmutableMap.of(
                 "id", movie.getId(),
                 "title", movie.getTitle(),
                 "boxart", getBoxart(movie)

@@ -28,7 +28,7 @@ public class Kata7 {
     }
 
     private static Map<String, ? extends Serializable> getMovie(Movie movie) {
-        return Map.of(
+        return ImmutableMap.of(
                 "id", movie.getId(),
                 "title", movie.getTitle(),
                 "boxart", getUrl(movie));

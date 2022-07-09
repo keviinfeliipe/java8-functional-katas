@@ -30,7 +30,7 @@ public class Kata9 {
     }
 
     private static Map<String, ? extends Serializable> getVideo(Movie movie) {
-        return Map.of(
+        return ImmutableMap.of(
                 "id", movie.getId(),
                 "title", movie.getTitle(),
                 "time", getTime(movie),
